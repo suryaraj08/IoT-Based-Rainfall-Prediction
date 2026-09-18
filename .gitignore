@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+venv/
+logs/
+data/raw/dataset.csv
+model/rain_model.pkl
+model/metadata.json
+aeris_config.json
+*.pkl

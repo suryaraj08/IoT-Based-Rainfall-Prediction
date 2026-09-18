@@ -1,0 +1,311 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AERIS — Rainfall Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="brand">AERIS <i>/ AI</i></div>
+  <div class="links" id="navLinks">
+    <span class="active" data-sec="overview">Overview</span>
+    <span data-sec="sensors">Sensors</span>
+    <span data-sec="prediction">Prediction</span>
+    <span data-sec="analytics">Analytics</span>
+    <span data-sec="radar">Radar</span>
+    <span data-sec="hardware">Hardware</span>
+    <span data-sec="network">Network</span>
+    <span data-sec="history">History</span>
+    <span data-sec="settings">Settings</span>
+  </div>
+  <div class="online" id="systemStatus"><span class="dot"></span>SYSTEM ONLINE</div>
+</nav>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <section class="page active" id="page-overview">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">ENVIRONMENTAL INTELLIGENCE / 01</div>
+        <h1>Rainfall<br>Prediction</h1>
+        <p>AI-powered atmospheric monitoring and predictive analysis for real-time environmental intelligence.</p>
+        <div class="meta">
+          <div class="tempbig" id="heroTemp">--&deg;</div>
+          <div class="loc">CHENNAI, INDIA<br><span style="color:#697384">13.08&deg; N / 80.27&deg; E</span></div>
+        </div>
+        <div class="active"><span class="dot"></span> <span id="heroStatus">MONITORING ACTIVE</span></div>
+        <div class="mode-row">
+          <button class="mode-btn active" id="btnSim" onclick="setMode('simulation')"><span>Simulation</span></button>
+          <button class="mode-btn" id="btnLive" onclick="setMode('live')"><span>Live ESP32</span></button>
+        </div>
+      </div>
+      <div class="visual">
+        <div class="ring r1"></div>
+        <div class="ring r2"></div>
+        <div class="ring r3"></div>
+        <div class="orb"></div>
+        <div class="rain" id="rain"></div>
+      </div>
+    </section>
+
+    <div class="title"><div><h2>Live Telemetry</h2><span>ESP32 environmental sensor network</span></div><span id="clock"></span></div>
+    <section class="grid">
+      <div class="panel sensor"><span class="tag" id="tagTemp">LIVE</span><div class="label">TEMPERATURE</div><div class="val" id="temp">--</div><div class="unit">&deg;C &middot; DHT22</div></div>
+      <div class="panel sensor"><span class="tag" id="tagHum">LIVE</span><div class="label">HUMIDITY</div><div class="val" id="hum">--</div><div class="unit">% &middot; DHT22</div></div>
+      <div class="panel sensor"><span class="tag sim" id="tagPres">SIM</span><div class="label">PRESSURE</div><div class="val" id="pressure">--</div><div class="unit">hPa &middot; BMP280</div></div>
+      <div class="panel sensor"><span class="tag sim" id="tagRain">SIM</span><div class="label">RAIN INTENSITY</div><div class="val" id="rainVal">--</div><div class="unit">% &middot; RAIN SENSOR</div></div>
+      <div class="panel sensor"><span class="tag sim">SIM</span><div class="label">WIND SPEED</div><div class="val" id="wind">--</div><div class="unit">km/h &middot; SIMULATED</div></div>
+      <div class="panel sensor"><span class="tag sim">SIM</span><div class="label">WIND DIRECTION</div><div class="val" id="direction">--</div><div class="unit">SIMULATED VECTOR</div></div>
+    </section>
+
+    <div class="title" style="margin-top:50px"><div><h2>Predictive Intelligence</h2><span>Model inference layer</span></div></div>
+    <section class="grid">
+      <div class="panel big">
+        <h3>AI Rainfall Forecast</h3>
+        <div class="sub">Next observation window</div>
+        <div class="gauge" id="gauge"><div class="gcontent"><div class="prob" id="prob">--%</div><div class="conf">MODEL CONFIDENCE <b id="confidence">--%</b></div></div></div>
+        <div class="forecast" id="forecast">--</div>
+        <div class="model" id="modelLabel">MODEL: RANDOM FOREST / STATUS: SIMULATION</div>
+      </div>
+      <div class="panel chart">
+        <h3>Atmospheric Trends</h3>
+        <div class="sub">Live rolling telemetry &middot; 30 observations</div>
+        <canvas id="chart"></canvas>
+      </div>
+    </section>
+
+    <div class="title" style="margin-top:50px"><div><h2>Environmental Field</h2><span>Atmospheric visualization</span></div></div>
+    <section class="grid">
+      <div class="panel radar">
+        <h3>Precipitation Field</h3>
+        <div class="sub">Meteorological radar simulation &middot; Chennai</div>
+        <div class="radarbox"><div class="radarc"><div class="sweep"></div><div class="marker"></div><div class="chennai">CHENNAI</div></div></div>
+      </div>
+      <div class="panel status">
+        <h3>Hardware Status</h3>
+        <div class="sub">Sensor network health</div>
+        <div class="row"><span>ESP32</span><span class="state" id="hwEsp32"><span class="sdot off"></span>DISCONNECTED</span></div>
+        <div class="row"><span>DHT22</span><span class="state" id="hwDht"><span class="sdot off"></span>SIMULATED</span></div>
+        <div class="row"><span>BMP280</span><span class="state amber" id="hwBmp"><span class="sdot amber"></span>SIMULATED</span></div>
+        <div class="row"><span>RAIN SENSOR</span><span class="state amber" id="hwRain"><span class="sdot amber"></span>SIMULATED</span></div>
+        <div class="row"><span>AI ENGINE</span><span class="state" id="hwAi"><span class="sdot amber"></span>ACTIVE / SIM</span></div>
+      </div>
+    </section>
+
+    <div class="title" style="margin-top:50px"><div><h2>Sensor Network</h2><span>Data acquisition architecture</span></div></div>
+    <section class="grid">
+      <div class="panel network">
+        <div class="nodes">
+          <div class="node"><b>DHT22</b><small>LIVE HARDWARE</small></div>
+          <div class="connector"></div>
+          <div class="node"><b>ESP32</b><small id="netEsp">SIMULATED</small></div>
+          <div class="connector"></div>
+          <div class="node"><b>AI ENGINE</b><small>RANDOM FOREST</small></div>
+          <div class="connector"></div>
+          <div class="node"><b>RAINFALL</b><small>PREDICTION</small></div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- SENSORS PAGE -->
+  <section class="page" id="page-sensors">
+    <div class="title"><div><h2>Live Sensors</h2><span>Detailed sensor telemetry</span></div></div>
+    <section class="grid">
+      <div class="panel sensor detail"><span class="tag" id="tagTemp2">LIVE</span><div class="label">TEMPERATURE</div><div class="val" id="temp2">--</div><div class="unit">&deg;C &middot; DHT22</div><div class="bar"><div class="barfill" id="barTemp" style="width:50%"></div></div><div class="barlabels"><span>-20&deg;C</span><span>60&deg;C</span></div></div>
+      <div class="panel sensor detail"><span class="tag" id="tagHum2">LIVE</span><div class="label">HUMIDITY</div><div class="val" id="hum2">--</div><div class="unit">% &middot; DHT22</div><div class="bar"><div class="barfill" id="barHum" style="width:75%"></div></div><div class="barlabels"><span>0%</span><span>100%</span></div></div>
+      <div class="panel sensor detail"><span class="tag sim" id="tagPres2">SIM</span><div class="label">PRESSURE</div><div class="val" id="pres2">--</div><div class="unit">hPa &middot; BMP280</div><div class="bar"><div class="barfill" id="barPres" style="width:70%"></div></div><div class="barlabels"><span>850</span><span>1100</span></div></div>
+      <div class="panel sensor detail"><span class="tag sim" id="tagRain2">SIM</span><div class="label">RAIN SENSOR</div><div class="val" id="rain2">--</div><div class="unit">% &middot; RAIN MODULE</div><div class="bar"><div class="barfill" id="barRain" style="width:20%"></div></div><div class="barlabels"><span>DRY</span><span>HEAVY</span></div><div class="rainstate" id="rainState">DRY</div></div>
+    </section>
+  </section>
+
+  <!-- PREDICTION PAGE -->
+  <section class="page" id="page-prediction">
+    <div class="title"><div><h2>AI Rainfall Prediction</h2><span>Random Forest classifier output</span></div></div>
+    <section class="grid">
+      <div class="panel big">
+        <h3>Classification Result</h3>
+        <div class="gauge" id="gauge2"><div class="gcontent"><div class="prob" id="prob2">--%</div><div class="conf">ESTIMATED PROBABILITY <b id="probClass2">NO_RAIN</b></div></div></div>
+        <div class="forecast" id="forecast2">--</div>
+        <div class="model" id="modelLabel2">MODEL: RANDOM FOREST</div>
+      </div>
+      <div class="panel">
+        <h3>Feature Input</h3>
+        <div class="sub">Current sensor values sent to model</div>
+        <table class="ftable">
+          <tr><td>Temperature</td><td id="ftT">--</td></tr>
+          <tr><td>Humidity</td><td id="ftH">--</td></tr>
+          <tr><td>Pressure</td><td id="ftP">--</td></tr>
+          <tr><td>Rain Sensor</td><td id="ftR">--</td></tr>
+        </table>
+      </div>
+    </section>
+    <div class="title" style="margin-top:50px"><div><h2>Model Limitations</h2><span>Important constraints</span></div></div>
+    <section class="grid">
+      <div class="panel">
+        <ul class="limits">
+          <li>Prototype system for academic demonstration</li>
+          <li>Model depends on training dataset quality and geographic relevance</li>
+          <li>Sensor calibration directly affects prediction quality</li>
+          <li>Weather is inherently variable; local micro-climates may differ</li>
+          <li>Predictions are probabilistic estimates, not certainties</li>
+          <li>Not a substitute for professional meteorological services</li>
+        </ul>
+      </div>
+    </section>
+  </section>
+
+  <!-- ANALYTICS PAGE -->
+  <section class="page" id="page-analytics">
+    <div class="title"><div><h2>Atmospheric Analytics</h2><span>Trend analysis across all sensors</span></div></div>
+    <section class="grid">
+      <div class="panel chart"><h3>Temperature Trend</h3><div class="sub">Rolling 30 observations</div><canvas id="chartTemp"></canvas></div>
+      <div class="panel chart"><h3>Humidity Trend</h3><div class="sub">Rolling 30 observations</div><canvas id="chartHum"></canvas></div>
+      <div class="panel chart"><h3>Pressure Trend</h3><div class="sub">Rolling 30 observations</div><canvas id="chartPres"></canvas></div>
+      <div class="panel chart"><h3>Rain Sensor Trend</h3><div class="sub">Rolling 30 observations</div><canvas id="chartRain"></canvas></div>
+    </section>
+  </section>
+
+  <!-- RADAR PAGE -->
+  <section class="page" id="page-radar">
+    <div class="title"><div><h2>Precipitation Radar</h2><span>Simulated meteorological visualization</span></div></div>
+    <section class="grid">
+      <div class="panel radar wide">
+        <h3>Precipitation Field</h3>
+        <div class="sub">Meteorological radar simulation &middot; Chennai &middot; 13.08&deg; N / 80.27&deg; E</div>
+        <div class="radarbox bigradar"><div class="radarc"><div class="sweep"></div><div class="marker"></div><div class="chennai">CHENNAI</div></div></div>
+      </div>
+    </section>
+  </section>
+
+  <!-- HARDWARE PAGE -->
+  <section class="page" id="page-hardware">
+    <div class="title"><div><h2>Hardware Status</h2><span>Sensor network health</span></div></div>
+    <section class="grid">
+      <div class="panel status full">
+        <div class="row"><span>ESP32</span><span class="state" id="hwEsp32b"><span class="sdot off"></span>DISCONNECTED</span></div>
+        <div class="row"><span>DHT22 (Temp/Humidity)</span><span class="state" id="hwDhtb"><span class="sdot off"></span>SIMULATED</span></div>
+        <div class="row"><span>BMP280 (Pressure)</span><span class="state amber" id="hwBmpb"><span class="sdot amber"></span>SIMULATED</span></div>
+        <div class="row"><span>Rain Sensor Module</span><span class="state amber" id="hwRainb"><span class="sdot amber"></span>SIMULATED</span></div>
+        <div class="row"><span>OLED Display</span><span class="state dim"><span class="sdot dim"></span>LOCAL ONLY</span></div>
+        <div class="row"><span>AI Engine</span><span class="state" id="hwAib"><span class="sdot amber"></span>ACTIVE / SIM</span></div>
+      </div>
+      <div class="panel status full">
+        <h3>Serial Connection</h3>
+        <div class="sub">ESP32 communication parameters</div>
+        <div class="row"><span>COM Port</span><span class="val" id="serialPort">COM9</span></div>
+        <div class="row"><span>Baud Rate</span><span class="val" id="serialBaud">115200</span></div>
+        <div class="row"><span>Packets Received</span><span class="val" id="serialPkts">0</span></div>
+        <div class="row"><span>Invalid Packets</span><span class="val" id="serialInvalid">0</span></div>
+        <div class="row"><span>Last Packet</span><span class="val" id="serialLast">--</span></div>
+        <div class="row"><span>Data Quality</span><span class="val" id="serialQuality">GOOD</span></div>
+      </div>
+    </section>
+  </section>
+
+  <!-- NETWORK PAGE -->
+  <section class="page" id="page-network">
+    <div class="title"><div><h2>Sensor Network</h2><span>Data acquisition architecture</span></div></div>
+    <section class="grid">
+      <div class="panel network full">
+        <div class="nodes">
+          <div class="node"><b>DHT22</b><small>Temp / Humidity</small></div>
+          <div class="connector"></div>
+          <div class="node"><b>ESP32</b><small id="netEsp2">SIMULATED</small></div>
+          <div class="connector"></div>
+          <div class="node"><b>DATA PIPELINE</b><small>Python Backend</small></div>
+          <div class="connector"></div>
+          <div class="node"><b>RANDOM FOREST</b><small>ML Classifier</small></div>
+          <div class="connector"></div>
+          <div class="node"><b>RAINFALL</b><small>Prediction Output</small></div>
+        </div>
+        <div class="nodes" style="margin-top:30px">
+          <div class="node"><b>BMP280</b><small>Pressure</small></div>
+          <div class="connector"></div>
+          <div class="node"><b>ESP32</b><small>Microcontroller</small></div>
+          <div class="connector"></div>
+          <div class="node"><b>RAIN SENSOR</b><small>Detection</small></div>
+          <div class="connector"></div>
+          <div class="node"><b>OLED</b><small>Local Display</small></div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- HISTORY PAGE -->
+  <section class="page" id="page-history">
+    <div class="title"><div><h2>Data History</h2><span>Observation log &middot; <span id="histCount">0</span> records</span></div><button class="dlbtn" onclick="downloadCSV()"><span>Download CSV</span></button></div>
+    <section class="grid">
+      <div class="panel full">
+        <div class="tablewrap">
+          <table class="dtable" id="histTable">
+            <thead><tr><th>Time</th><th>Mode</th><th>Temp</th><th>Hum</th><th>Pres</th><th>Rain</th><th>Prediction</th><th>Prob</th></tr></thead>
+            <tbody id="histBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- SETTINGS PAGE -->
+  <section class="page" id="page-settings">
+    <div class="title"><div><h2>Settings</h2><span>System configuration</span></div></div>
+    <section class="grid">
+      <div class="panel">
+        <h3>Operating Mode</h3>
+        <div class="sub">Switch between simulation and live hardware</div>
+        <div class="mode-row" style="margin-top:16px">
+          <button class="mode-btn active" id="btnSim2" onclick="setMode('simulation')"><span>Simulation</span></button>
+          <button class="mode-btn" id="btnLive2" onclick="setMode('live')"><span>Live ESP32</span></button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Serial Configuration</h3>
+        <div class="sub">ESP32 connection parameters</div>
+        <label class="flabel">COM Port</label>
+        <input class="finput" id="setPort" value="COM9">
+        <label class="flabel">Baud Rate</label>
+        <input class="finput" id="setBaud" value="115200" type="number">
+        <label class="flabel">Update Interval (s)</label>
+        <input class="finput" id="setInterval" value="1.5" step="0.1" type="number">
+        <button class="savebtn" onclick="saveSettings()"><span>Save Serial Settings</span></button>
+      </div>
+      <div class="panel">
+        <h3>Rain Calibration</h3>
+        <div class="sub">Configure rain sensor normalization</div>
+        <label class="flabel">Dry Raw Value</label>
+        <input class="finput" id="setDry" value="0" type="number">
+        <label class="flabel">Wet Raw Value</label>
+        <input class="finput" id="setWet" value="100" type="number">
+        <label class="flabel">Normalize</label>
+        <input class="fcheck" id="setNorm" type="checkbox" checked>
+        <button class="savebtn" onclick="saveCalibration()"><span>Save Calibration</span></button>
+      </div>
+      <div class="panel">
+        <h3>Location</h3>
+        <div class="sub">Monitoring location</div>
+        <label class="flabel">City</label>
+        <input class="finput" id="setCity" value="Chennai">
+        <label class="flabel">Latitude</label>
+        <input class="finput" id="setLat" value="13.08" step="0.01" type="number">
+        <label class="flabel">Longitude</label>
+        <input class="finput" id="setLon" value="80.27" step="0.01" type="number">
+        <button class="savebtn" onclick="saveLocation()"><span>Save Location</span></button>
+      </div>
+    </section>
+  </section>
+
+</main>
+
+<footer><span>AERIS / AI &middot; ECE ENVIRONMENTAL INTELLIGENCE</span><span>LIVE PROTOTYPE &middot; 2026</span></footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
