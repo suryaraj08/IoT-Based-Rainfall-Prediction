@@ -5,8 +5,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # --- Server ---
 HOST = "0.0.0.0"
-PORT = 5000
-DEBUG = True
+PORT = int(os.environ.get("PORT", 5000))
+DEBUG = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
 
 # --- Serial / ESP32 ---
 SERIAL_PORT = os.environ.get("AERIS_SERIAL_PORT", "COM9")
